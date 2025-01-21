@@ -19,3 +19,15 @@ body {
   background: var(--background);
   font-family: Arial, Helvetica, sans-serif;
 }
+
+.header-container {
+  background-color: pink;
+  text-align: center;
+  padding: 20px;
+}
+
+.header-container header {
+  font-size: 2rem; /* Ajuste o tamanho conforme necessário */
+  color: white;    /* Cor do texto */
+}
+
