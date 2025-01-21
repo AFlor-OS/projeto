@@ -1,15 +1,17 @@
 "use client";
 
-import React, {useState, useEffect} from 'react';
-import {getJoke} from "../services/chuck";
+import React, { useState, useEffect, ReactNode } from "react";
+import { getJoke } from "../services/chuck";
 
+// Define o tipo das props do componente Title
+interface TitleProps {
+  children: ReactNode;
+}
 
-function Title({ children }) {
+function Title({ children }: TitleProps) {
   return (
     <React.Fragment>
-      <h1>
-        {children}
-      </h1>
+      <h1>{children}</h1>
       <style jsx>{`
         h1 {
           color: blue;
@@ -22,39 +24,35 @@ function Title({ children }) {
 }
 
 export default function Blog() {
-  const [joke,setJoke] = useState("");
-  const [loading, setLoading] = useState(true);
+  // O estado `joke` é uma string, e `loading` é um boolean
+  const [joke, setJoke] = useState<string>("");
+  const [loading, setLoading] = useState<boolean>(true);
 
-  useEffect (() => {
+  useEffect(() => {
     setLoading(true);
-    getJoke().then((d) => {
-      setJoke(d)
-      setLoading(false);
-    })
-    .catch((e)=>{
-      setLoading(false)
-      console.log(e)
-    })
-  },[])
+    getJoke()
+      .then((d) => {
+        setJoke(d);
+        setLoading(false);
+      })
+      .catch((e) => {
+        setLoading(false);
+        console.error(e);
+      });
+  }, []);
 
   return (
     <div className="container">
       <Title>Tulinho Maravilha</Title>
       <div className="buttons">
-        <button
-          type="button"
-          className="btn"
-        >
+        <button type="button" className="btn">
           <a href="/login">Entrar</a>
         </button>
-        <button
-          type="button"
-          className="btn"
-        >
+        <button type="button" className="btn">
           <a href="/cadastro">Cadastre-se</a>
         </button>
       </div>
-      <div className='piada'> 
+      <div className="piada">
         <h2>Piada do dia</h2>
         {loading ? (
           <p>
@@ -63,10 +61,7 @@ export default function Blog() {
         ) : (
           <p>{joke}</p>
         )}
-      
       </div>
-
-
 
       <style jsx>{`
         .container {
@@ -103,31 +98,32 @@ export default function Blog() {
           text-decoration: none;
           color: white;
         }
-    .piada {
-    background-color: #ffffff; /* Fundo branco para destaque */
-    padding: 20px;
-    border-radius: 10px; /* Cantos arredondados */
-    box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1); /* Sombra suave */
-    text-align: center; /* Centralizar texto */
-    margin-top: 20px;
-    max-width: 600px; /* Limitar largura */
-    width: 100%; /* Responsivo */
-    border: 1px solid #dddddd; /* Bordas suaves */
-  }
 
-  .piada h2 {
-    font-size: 24px;
-    margin-bottom: 10px;
-    color: #333333;
-  }
+        .piada {
+          background-color: #ffffff;
+          padding: 20px;
+          border-radius: 10px;
+          box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
+          text-align: center;
+          margin-top: 20px;
+          max-width: 600px;
+          width: 100%;
+          border: 1px solid #dddddd;
+        }
 
-  .piada p {
-    font-size: 18px;
-    line-height: 1.5;
-    color:rgb(53, 115, 149);
-  }
+        .piada h2 {
+          font-size: 24px;
+          margin-bottom: 10px;
+          color: #333333;
+        }
 
-.spinner {
+        .piada p {
+          font-size: 18px;
+          line-height: 1.5;
+          color: rgb(53, 115, 149);
+        }
+
+        .spinner {
           display: inline-block;
           width: 12px;
           height: 12px;
@@ -146,8 +142,6 @@ export default function Blog() {
             transform: rotate(360deg);
           }
         }
-
-
       `}</style>
     </div>
   );
