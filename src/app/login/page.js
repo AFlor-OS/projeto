@@ -1,11 +1,47 @@
 "use client";
 
+import { useState } from "react";
+import { useRouter } from "next/navigation"; // Importa o useRouter
+
 export default function Login() {
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [error, setError] = useState(""); // Estado para exibir erros
+  const router = useRouter(); // Inicializa o useRouter
+
+  const handleSubmit = async (e) => {
+    e.preventDefault(); // Impede o comportamento padrão do formulário
+    setError(""); // Limpa erros anteriores
+
+    try {
+      const response = await fetch("http://localhost:5000/api/auth/login", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ email, password }),
+      });
+
+      if (!response.ok) {
+        const { message } = await response.json();
+        throw new Error(message || "Erro ao fazer login.");
+      }
+
+      const { token } = await response.json(); // Extrai o token da resposta
+      localStorage.setItem("token", token); // Armazena o token no localStorage
+      router.push("/posts"); // Redireciona o usuário para a página de posts
+    } catch (err) {
+      setError(err.message); // Exibe o erro
+      console.error("Erro ao fazer login:", err);
+    }
+  };
+
   return (
     <div className="container">
       <h1>Bem-vindo de volta</h1>
       <div className="form-container">
-        <form>
+        {error && <p className="error">{error}</p>} {/* Exibe erros */}
+        <form onSubmit={handleSubmit}>
           <div className="form-group">
             <label htmlFor="email">Email</label>
             <input
@@ -14,6 +50,8 @@ export default function Login() {
               name="email"
               required
               className="input"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
             />
           </div>
           <div className="form-group">
@@ -24,14 +62,16 @@ export default function Login() {
               name="password"
               required
               className="input"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
             />
           </div>
           <button type="submit" className="btn">
-            <a href="/posts">Entrar</a>
+            Entrar
           </button>
         </form>
         <p className="link">
-          Não tem uma conta?{' '}
+          Não tem uma conta?{" "}
           <a href="/cadastro" className="link-highlight">
             Cadastre-se
           </a>
@@ -125,6 +165,12 @@ export default function Login() {
 
         .link-highlight:hover {
           text-decoration: underline;
+        }
+
+        .error {
+          color: red;
+          margin-bottom: 15px;
+          text-align: center;
         }
       `}</style>
     </div>
