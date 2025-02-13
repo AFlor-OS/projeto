@@ -133,30 +133,40 @@ export default function PostDetails() {
       alert("O comentário não pode estar vazio.");
       return;
     }
-
+  
+    const token = localStorage.getItem("token"); // Obtém o token do localStorage
+    if (!token) {
+      alert("Usuário não autenticado.");
+      return;
+    }
+  
     try {
       const response = await fetch(`http://localhost:5000/api/posts/${id}/comments`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`,
+          Authorization: `Bearer ${token}`, // Inclui o token no cabeçalho da requisição
         },
-        body: JSON.stringify({ content: newComment }),
+        body: JSON.stringify({
+          content: newComment,
+          postId: id,  // Envia o ID do post atual
+        }),
       });
-
+  
       if (!response.ok) {
         const errorData = await response.json();
         throw new Error(errorData.message || "Erro ao adicionar comentário.");
       }
-
+  
       const commentData = await response.json();
-      setComments((prevComments) => [...prevComments, commentData.comment]);
-      setNewComment("");
-      alert("Comentário adicionado com sucesso!");
+      setComments((prevComments) => [...prevComments, commentData.comment]); // Atualiza a lista de comentários
+      setNewComment(""); // Limpa o campo de texto
     } catch (err) {
       alert(err.message);
     }
   };
+  
+  
 
   if (loading) return <p className="loading">Carregando detalhes do post...</p>;
   if (!post) return <p className="error">{postError || "Post não encontrado."}</p>;
@@ -235,6 +245,7 @@ export default function PostDetails() {
 
         {currentUser && (
           <div className="comment-form">
+            <h3>Adicione um comentário:</h3>
             <textarea
               value={newComment}
               onChange={(e) => setNewComment(e.target.value)}
